@@ -19,7 +19,6 @@ for tweet in tweepy.Cursor(api.search, q="jihadism", lang="en").items(10000):
 
 csvFile.close()
 
-
 import codecs
 import nltk
 import re
@@ -40,13 +39,12 @@ file = open(filename, 'rt')
 text = file.read()
 file.close()
 
+
 import re
+
 alpha_num_values = re.split(r'\W+', text)
-
-
 filtered_tokens = [x for x in alpha_num_values if not any(c.isdigit() for c in x)]
 #print(filtered_tokens)
-
 lemma = nltk.wordnet.WordNetLemmatizer()
 stemmed_words = [lemma.lemmatize(word) for word in filtered_tokens]
 #print(stemmed_words)
@@ -58,12 +56,8 @@ words = [w for w in stemmed_words if not w in stop_words]
 
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-
 analyzer = SentimentIntensityAnalyzer()
-
 negative_list = []
-
-
 for word in words:
     sentiment_dict = analyzer.polarity_scores(word)
     if sentiment_dict['compound'] <= - 0.05:
@@ -75,14 +69,11 @@ import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 vectorizer = TfidfVectorizer(use_idf=True)
-
 matrix=vectorizer.fit_transform(negative_list)
 vectorizer.vocabulary
 vector= vectorizer.idf_
-
-
-
 df = pd.DataFrame(matrix.toarray(), columns=vectorizer.get_feature_names())
+
 
 from sklearn.cluster import KMeans
 
